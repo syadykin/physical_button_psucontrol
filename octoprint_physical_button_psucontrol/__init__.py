@@ -2,17 +2,24 @@ import octoprint.plugin
 
 class PhysicalButtonPSUControlPlugin(octoprint.plugin.StartupPlugin):
     def on_after_startup(self):
-        helpers = self._plugin_manager.get_helpers("physicalbutton", "register_button_actions")
-        if helpers and all(map(lambda x: x in helpers, ["register_button_actions", "get_psu_state", "turn_psu_on", "turn_psu_off"])):
-            helpers["register_button_actions"]("toggle_psu", "Toggle PSU", "Toggle the power supply unit (PSU) on or off.", self.toggle_psu)
+        physicalbutton_helpers = self._plugin_manager.get_helpers("physicalbutton", "register_button_actions")
+        psucontrol_helpers = self._plugin_manager.get_helpers("psucontrol", "get_psu_state", "turn_psu_on", "turn_psu_off")
+
+        if physicalbutton_helpers and all(map(lambda x: x in physicalbutton_helpers, ["register_button_actions"])) \
+            and psucontrol_helpers and all(map(lambda x: x in psucontrol_helpers, ["get_psu_state", "turn_psu_on", "turn_psu_off"])):
+
+            self._logger.info("Registering toggle_psu action")
+            physicalbutton_helpers["register_button_actions"](self, {
+                "toggle_psu": self.toggle_psu
+            })
 
     def toggle_psu(self):
-        psu_state = self._plugin_manager.get_helpers("psucontrol", "get_psu_state")
-        if psu_state:
-            if psu_state == "on":
-                self._plugin_manager.get_helpers("psucontrol", "turn_psu_off")()
-            else:
-                self._plugin_manager.get_helpers("psucontrol", "turn_psu_on")()
+        helpers = self._plugin_manager.get_helpers("psucontrol", "get_psu_state", "turn_psu_on", "turn_psu_off")
+
+        if helpers["get_psu_state"]():
+            helpers["turn_psu_off"]()
+        else:
+            helpers["turn_psu_on"]()
 
 
 
