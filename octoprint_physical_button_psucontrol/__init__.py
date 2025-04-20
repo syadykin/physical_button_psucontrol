@@ -19,6 +19,6 @@ class PhysicalButtonPSUControlPlugin(octoprint.plugin.StartupPlugin):
 
 __plugin_name__ = "Physical Buttons - PSU Control"
 __plugin_version__ = "1.0.0"
-__plugin_description__ = "A bridge between PSU control and physical buttons plugin"
+__plugin_description__ = "A bridge between PSU control and physical button plugin"
 __plugin_pythoncompat__ = ">=3.7,<4"
 __plugin_implementation__ = PhysicalButtonPSUControlPlugin()
